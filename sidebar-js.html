@@ -1,0 +1,269 @@
+<script>
+  let form = document.querySelector("form");
+  form.addEventListener("submit", handleFormSubmit)
+
+  let selector; 
+  let ddlFrom;
+  
+  const sheetName = document.title;
+  
+  // These TAB and COLUMN constants are duplicates to the same
+  // values inside of Code.gs file. It's just a temporary solution
+  // I have to find a clear way to fetch these constants from 
+  // the client-side.
+  const TAB = {
+    CONTRACTS:  "Contracts",
+    PAYMENTS:   "Payments",
+    PROPERTIES: "Properties",
+    CONTACTS:   "Contacts",
+    DATA:       "Data",
+  };
+  const COLUMN = {
+    CONTRACTS: {
+      REFERENCE:            "Reference",
+      ID:                   "ID",
+      KAM:                  "KAM *Data*",
+      TRANSACTION_TYPE:     "Transaction Type *Data*",
+      CONTRACT_START_DATE:  "Contract Start Date",
+      CONTRACT_END_DATE:    "Contract End Date",
+      CONTRACT_DURATION:    "Contract Duration",
+      LANDLORD:             "Landlord *Contacts*",
+      GROSS_SALES_RATE:     "Gross Sales Rate",
+      CONTRACT_STATUS:      "Contract Status",
+      PROPERTY:             "Property *Properties*",
+      CLIENT:               "Client *Contacts*",
+      PROPERTY_CONTACT:     "Property contact *Contacts*",
+      CONTACT_URL:          "Contract URL",
+    },
+    PAYMENTS: {
+      REFERENCE:            "Reference",
+      ID:                   "ID",
+      KAM:                  "KAM",
+      TRANSACTION_TYPE:     "Transaction Type",
+      CONTRACT_START_DATE:  "Contract Start Date",
+      CONTRACT_END_DATE:    "Contract End Date",
+      CONTRACT_DURATION:    "Contract Duration",
+      PAYER:                "Payer",
+      GROSS_SALES_RATE:     "Gross Sales Rate",
+      DUES_PHP:             "Dues (Php)",
+      NET_SALES_RATE:       "Net Sales Rate",
+      COM_RATE_PERCENT:     "Com. Rate (%)",
+      GROSS_COM:            "Gross Com.",
+      DISCOUNT_PERCENT:     "Discount (%)",
+      DISCOUNT_PHP:         "Discount (Php)",
+      NET_COM:              "Net Com.",
+      EXTERNAL_AGENT_GCI_PHP: "External Agent GCI (Php)",
+      EXTERNAL_AGENT_GCI_PERCENT: "External Agent GCI (%)",
+      EXTERNAL_AGENT_NAME:  "External Agent (Name)",
+      PROPEL_GCI_PERCENT:   "Propel GCI (%)",
+      PROPEL_GCI_PHP:       "Propel GCI (Php)",
+      INTERNAL_AGENT_PHP:   "Internal Agent (Php)",
+      INTERNAL_AGENT_NAME:  "Internal Agent (Name)",
+      INTERNAL_AGENT_PERCENT: "Internal Agent (%)",
+      COST_TYPE:            "Cost Type",
+      PAYMENT_DUE_DATE:     "Payment Due Date",
+      PAYMENT_AMOUNT_DUE:   "Payment Amount Due",
+      PAYMENT_AMOUNT_RECEIVED: "Payment Amount Received",
+      PAYMENT_RECORD_1_DATE: "Payment Record 1 (Date)",
+      PAYMENT_STATUS:       "Payment Status",
+    },
+    PROPERTIES: {
+      NAME_AUTOFILL:        "Name (Autofill)",
+      TRANSACTION_TYPE:     "Transaction Type *Data*",
+      KAM:                  "KAM *Data*",
+      PROPERTY_CONNECTION:  "Property Connection *Data*",
+      BUILDING_VILLAGE:     "Building / Village *Data*",
+      TOWER_STREET:         "Tower / Street",
+      UNIT:                 "Unit",
+      UNIT_TYPE:            "Unit Type",
+      SQM:                  "Sqm",
+      FURNISHED:            "Furnished *Data*",
+      RENT_MONTH:           "Rent/month (asking)",
+      SALES_PRICE:          "Sales Price",
+      PETFRIENDLY:          "Petfriendly",
+      BALCONY:              "Balcony",
+      PARKING:              "Parking",
+      MAIDSROOM:            "Maidsroom",
+      FACING_VIEW:          "Facing/View",
+      COMMENT:              "Comment",
+      URL_TO_PICTURES:      "URL to Pictures",
+      PROPERTY_CONTACT:     "Property contact",
+      LANDLORD:             "Landlord",
+    },
+    CONTACTS: {
+      FULL_NAME:            "FULL NAME",
+      KAM:                  "KAM *Data*",
+      CONTACT_TYPE:         "Contact Type *Data*",
+      NATIONALITY:          "Nationality",
+      EMPLOYER:             "Emloyer",
+      ADDRESS:              "Address",
+      MOBILE:               "Mobile (+639xx with predial...)*",
+      EMAIL:                "Email",
+    },
+    DATA: {
+      KAM:                  "KAM",
+      TRANSACTION_TYPE:     "Transaction Type",
+      CONTRACT_STATUS:      "Contract Status",
+      PROPERTY_CONNECTION:  "Property Connection",
+      BUILDING:             "Building",
+      FURNISHING:           "Furnishing",
+      CONTACT_TYPE:         "Contact Type",
+      COST_TYPE:            "Cost Type",
+    },
+  };
+
+  switch (sheetName) {
+    
+    case TAB.CONTRACTS:
+      ddlFrom = {
+        kam:              { sheet: TAB.DATA, column: COLUMN.DATA.KAM },
+        transactionType:  { sheet: TAB.DATA, column: COLUMN.DATA.TRANSACTION_TYPE },
+        landlord:         { sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
+        contractStatus:   { sheet: TAB.DATA, column: COLUMN.DATA.CONTRACT_STATUS },
+        property:         { sheet: TAB.PROPERTIES, column: COLUMN.PROPERTIES.NAME_AUTOFILL },
+        client:           { sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
+        propertyContact:  { sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
+      };
+      selector = {
+        kam:                "select[name=kam]",
+        transactionType:    "select[name=transaction-type]",
+        contractStartDate:  "input[name=contract-start-date]",
+        contractEndDate:    "input[name=contract-end-date]",
+        contractDuration:   "input[name=contract-duration]",
+        landlord:           "select[name=landlord]",
+        grossSalesRate:     "input[name=gross-sales-rate]",
+        contractStatus:     "select[name=contract-status]",
+        property:           "select[name=property]",
+        client:             "select[name=client]",
+        propertyContact:    "select[name=property-contact]",
+        contractUrl:        "input[name=contract-url]",
+      };
+      break;
+    
+    case TAB.PAYMENTS:
+      ddlFrom = {
+        reference:          { sheet: TAB.CONTRACTS, column: COLUMN.CONTRACTS.REFERENCE },
+        externalAgentName:  { sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
+        internalAgentName:  { sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
+        costType:           { sheet: TAB.DATA, column: COLUMN.DATA.COST_TYPE },
+      };
+      selector = {
+        reference:                "select[name=reference]",
+        dues:                     "input[name=dues]",
+        netSalesRate:             "input[name=net-sales-rate]",
+        comRate:                  "input[name=com-rate]",
+        grossCom:                 "input[name=gross-com]",
+        discountPercent:          "input[name=discount-percent]",
+        discountPhp:              "input[name=discount-php]",
+        netCom:                   "input[name=net-com]",
+        externalAgentGciPhp:      "input[name=external-agent-gci-php]",
+        externalAgentGciPercent:  "input[name=external-agent-gci-percent]",
+        externalAgentName:        "select[name=external-agent-name]",
+        propelGciPercent:         "input[name=propel-gci-percent]",
+        propelGciPhp:             "input[name=propel-gci-php]",
+        internalAgentPhp:         "input[name=internal-agent-php]",
+        internalAgentName:        "select[name=internal-agent-name]",
+        internalAgentPercent:     "input[name=internal-agent-percent]",
+        costType:                 "select[name=cost-type]",
+        paymentDueDate:           "input[name=payment-due-date]",
+        paymentRecord1:           "input[name=payment-record-1]",
+      };
+      break;
+    
+    case TAB.PROPERTIES:
+      ddlFrom = {
+        type:               { sheet: TAB.DATA, column: COLUMN.DATA.TRANSACTION_TYPE },
+        kam:                { sheet: TAB.DATA, column: COLUMN.DATA.KAM },
+        propertyConnection: { sheet: TAB.DATA, column: COLUMN.DATA.PROPERTY_CONNECTION },
+        buildingVillage:    { sheet: TAB.DATA, column: COLUMN.DATA.BUILDING },
+        furnished:          { sheet: TAB.DATA, column: COLUMN.DATA.FURNISHING },
+        propertyContact:    { sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
+        landlord:           { sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
+      };
+      selector = {
+        type:               "select[name=type]",
+        kam:                "select[name=kam]",
+        propertyConnection: "select[name=property-connection]",
+        buildingVillage:    "select[name=building-village]",
+        towerStreet:        "input[name=tower-street]",
+        unit:               "input[name=unit]",
+        unitType:           "input[name=unit-type]",
+        sqm:                "input[name=sqm]",
+        furnished:          "select[name=furnished]",
+        rentMonth:          "input[name=rent-month]",
+        salesPrice:         "input[name=sales-price]",
+        petfriendly:        "input[name=petfriendly]",
+        balcony:            "input[name=balcony]",
+        parking:            "input[name=parking]",
+        maidsroom:          "input[name=maidsroom]",
+        facingView:         "input[name=facing-view]",
+        comment:            "input[name=comment]",
+        urlToPictures:      "input[name=url-to-pictures]",
+        propertyContact:    "select[name=property-contact]",
+        landlord:           "select[name=landlord]",
+      };
+      break;
+
+    case TAB.CONTACTS:
+      ddlFrom = {
+        kam:              { sheet: TAB.DATA, column: COLUMN.DATA.KAM},
+        contactType:      { sheet: TAB.DATA, column: COLUMN.DATA.CONTACT_TYPE},
+      };
+      selector = {
+        fullName:           "input[name=full-name]",
+        kam:                "select[name=kam]",
+        contactType:        "select[name=contact-type]",
+        nationality:        "input[name=nationality]",
+        employer:           "input[name=employer]",
+        address:            "input[name=address]",
+        mobile:             "input[name=mobile]",
+        email:              "input[name=email]",
+      };
+      break;
+
+  }
+
+  let el = {};
+  for (let key in selector) {
+    el[key] = document.querySelector(selector[key]);
+    if (selector[key].match(/^select.*$/)) {
+      console.log(`${key} matches regexp!`)
+      google.script.run
+        .withSuccessHandler((r) => fillDDL(el[key], r))
+        .getColumnContent(ddlFrom[key].sheet, ddlFrom[key].column);
+    }
+  }
+
+  function fillDDL(ddl, content) {
+    // Insert one empty element
+    let option = document.createElement("option");
+    option.setAttribute("value", "");
+    ddl.appendChild(option);
+    // All other elements from google table
+    for (let value of content) {
+      if (!value) continue;
+      let option = document.createElement("option");
+      option.setAttribute("value", value);
+      option.innerHTML = value;
+      ddl.appendChild(option);
+    }
+  }
+
+  function handleFormSubmit(e) {
+    e.preventDefault();
+    let children = form.children;
+    let obj = {};
+    let i = 0;
+    for (let key in selector) {
+      let index1 = i*2;
+      let index2 = i*2+1;
+      let title = children[index1];
+      let input = children[index2];
+      obj[title.innerHTML] = input.value;
+      i++;
+    }
+    console.log(obj);
+    google.script.run.addRecord(sheetName, obj);
+  }
+
+</script>
