@@ -1,29 +1,43 @@
 <form>
   <h1><?= kam ?></h1>
-  <select name="kam" required></select>
+  <input list="kam" name="kam" required>
+  <datalist id="kam"></datalist>
   <h1><?= transactionType ?></h1>
-  <select name="transaction-type" required></select>
+  <input list="transaction-type" name="transaction-type" required>
+  <datalist id="transaction-type"></datalist>
   <h1><?= contractStartDate ?></h1>
-  <input type="date" name="contract-start-date" required>
+  <input type="date" name="contract-start-date" required > <!---->
   <h1><?= contractEndDate ?></h1>
   <input type="date" name="contract-end-date">
   <h1><?= contractDuration ?></h1>
   <input type="number" name="contract-duration">
   <h1><?= landlord ?></h1>
-  <select name="landlord"></select>
+  <input list="landlord" name="landlord">
+  <datalist id="landlord"></datalist>
+  <span class="add add-contact">[+] Add a new contact</span>
   <h1><?= grossSalesRate ?></h1>
-  <input type="number" name="gross-sales-rate" min="0" required>
+  <input type="number" name="gross-sales-rate" min="0" required> <!---->
   <h1><?= contractStatus ?></h1>
-  <select name="contract-status"></select>
+  <input list="contract-status" name="contract-status">
+  <datalist id="contract-status"></datalist>
   <h1><?= property ?></h1>
-  <select name="property" required></select>
+  <input list="property" name="property" required> <!---->
+  <datalist id="property"></datalist>
+  <span class="add add-property">[+] Add a new property</span>
   <h1><?= client ?></h1>
-  <select name="client" required></select>
+  <input list="client" name="client" required> <!---->
+  <datalist id="client"></datalist>
+  <span class="add add-contact">[+] Add a new contact</span>
   <h1><?= propertyContact ?></h1>
-  <select name="property-contact" required></select>
+  <input list="property-contact" name="property-contact" required> <!---->
+  <datalist id="property-contact"></datalist>
+  <span class="add add-contact">[+] Add a new contact</span>
   <h1><?= contractUrl ?></h1>
   <input type="text" name="contract-url">
   <hr>
   <input type="reset">
   <input type="submit">
+  <button type="button" id="store-cookies">Store</button>
+  <button type="button" id="show-cookies">Restore</button>
+  <button type="button" id="reset-cookies">Reset cookies</button>
 </form>

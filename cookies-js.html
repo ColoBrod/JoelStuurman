@@ -1,0 +1,49 @@
+<script>
+  let cookies = {
+
+    get: function (name) {
+      return document.cookie.split('; ').reduce((r, v) => {
+        const parts = v.split('=')
+        return parts[0] === name ? decodeURIComponent(parts[1]) : r
+      }, '')
+    },
+
+    set: function (name, value, days = 7, path = '/') {
+      const expires = new Date(Date.now() + days * 864e5).toUTCString()
+      document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=' + path
+    },
+
+    delete: function (name, path = '/') {
+      cookies.set(name, '', -1, path)
+    },
+
+    store: function () {
+      let obj = {};
+      for (let key in selector) {
+        let s = selector[key];
+        let res = s.match(/^input\[name=([\w\d-]*)\]$/);
+        if (!res) continue;
+        let name = res[1];
+        let value = document.querySelector(s).value; 
+        obj[name] = value;
+      }
+      let json = JSON.stringify(obj);
+      cookies.set(sheetName, json);
+    },
+
+    restore: function () {
+      let json = cookies.get(sheetName);
+      if (!json) return;
+      const obj = JSON.parse(json);
+      for (let key in obj) {
+        let el = document.querySelector(`input[name=${key}]`);
+        el.value = obj[key];
+      }
+    },
+
+    reset: function () {
+      cookies.delete(sheetName);
+    },
+
+  }
+</script>

@@ -150,3 +150,11 @@ function letterToColumn(letter) {
   return column;
 }
 
+function getColumnIndex(sheetName, header) {
+  let sheet = ss.getSheetByName(sheetName)
+  let lastColumn = sheet.getLastColumn();
+  let range = sheet.getRange(1,1,1,lastColumn);
+  let values = range.getValues()[0];
+  let index = values.indexOf(header) + 1;
+  return index;
+}

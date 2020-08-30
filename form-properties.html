@@ -1,13 +1,17 @@
 <form>
 
   <h1><?= transactionType ?></h1>
-  <select name="type"></select>
+  <input name="type" list="type">
+  <datalist id="type" ></datalist>
   <h1><?= kam ?></h1>
-  <select name="kam"></select>
+  <input name="kam" list="kam">
+  <datalist id="kam" ></datalist>
   <h1><?= propertyConnection ?></h1>
-  <select name="property-connection"></select>
+  <input name="property-connection" list="property-connection">
+  <datalist id="property-connection" ></datalist>
   <h1><?= buildingVillage ?></h1>
-  <select name="building-village"></select>
+  <input name="building-village" list="building-village">
+  <datalist id="building-village" ></datalist>
   <h1><?= towerStreet ?></h1>
   <input type="text" name="tower-street">
   <h1><?= unit ?></h1>
@@ -17,7 +21,8 @@
   <h1><?= sqm ?></h1>
   <input type="number" name="sqm">
   <h1><?= furnished ?></h1>
-  <select name="furnished"></select>
+  <input name="furnished" list="furnished">
+  <datalist id="furnished" ></datalist>
   <h1><?= rentMonth ?></h1>
   <input type="number" name="rent-month">
   <h1><?= salesPrice ?></h1>
@@ -37,10 +42,13 @@
   <h1><?= urlToPictures ?></h1>
   <input type="text" name="url-to-pictures">
   <h1><?= propertyContact ?></h1>
-  <select name="property-contact"></select>
+  <input name="property-contact" list="property-contact">
+  <datalist id="property-contact" ></datalist>
+  <span class="add add-contact">[+] Add a new contact</span>
   <h1><?= landlord ?></h1>
-  <select name="landlord"></select>
-  
+  <input name="landlord" list="landlord">
+  <datalist id="landlord" ></datalist>
+  <span class="add add-contact">[+] Add a new contact</span>
   <hr>
   <input type="reset">
   <input type="submit">

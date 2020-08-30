@@ -1,6 +1,7 @@
 <form>
   <h1><?= reference ?></h1>
-  <select name="reference"></select>
+  <input list="reference" name="reference">
+  <datalist id="reference"></datalist>
   <h1><?= duesPhp ?></h1>
   <input type="number" name="dues" min="0">
   <h1><?= netSalesRate ?></h1>
@@ -20,7 +21,8 @@
   <h1><?= externalAgentGciPercent ?></h1>
   <input type="number" name="external-agent-gci-percent" min="0">
   <h1><?= externalAgentName ?></h1>
-  <select name="external-agent-name"></select>
+  <input name="external-agent-name" list="external-agent-name">
+  <datalist id="external-agent-name"></datalist>
   <h1><?= propelGciPercent ?></h1>
   <input type="number" name="propel-gci-percent" min="0">
   <h1><?= propelGciPhp ?></h1>
@@ -28,11 +30,13 @@
   <h1><?= internalAgentPhp ?></h1>
   <input type="number" name="internal-agent-php">
   <h1><?= internalAgentName ?></h1>
-  <select name="internal-agent-name"></select>
+  <input list="internal-agent-name" name="internal-agent-name">
+  <datalist id="internal-agent-name"></datalist>
   <h1><?= internalAgentPercent ?></h1>
   <input type="number" name="internal-agent-percent" min="0">
   <h1><?= costType ?></h1>
-  <select name="cost-type"></select>
+  <input list="cost-type" name="cost-type">
+  <datalist id="cost-type"></datalist>
   <h1><?= paymentDueDate ?></h1>
   <input type="date" name="payment-due-date">
   <h1><?= paymentRecord1Date ?></h1>

@@ -1,6 +1,9 @@
 <script>
+
   let form = document.querySelector("form");
-  form.addEventListener("submit", handleFormSubmit)
+  let goBack = document.querySelector("div.go-back");
+  form.addEventListener("submit", handleFormSubmit);
+  goBack.addEventListener("click", handleGoBack);
 
   let selector; 
   let ddlFrom;
@@ -116,39 +119,39 @@
     
     case TAB.CONTRACTS:
       ddlFrom = {
-        kam:              { sheet: TAB.DATA, column: COLUMN.DATA.KAM },
-        transactionType:  { sheet: TAB.DATA, column: COLUMN.DATA.TRANSACTION_TYPE },
-        landlord:         { sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
-        contractStatus:   { sheet: TAB.DATA, column: COLUMN.DATA.CONTRACT_STATUS },
-        property:         { sheet: TAB.PROPERTIES, column: COLUMN.PROPERTIES.NAME_AUTOFILL },
-        client:           { sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
-        propertyContact:  { sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
+        kam:              { selector: "datalist#kam", sheet: TAB.DATA, column: COLUMN.DATA.KAM },
+        transactionType:  { selector: "datalist#transaction-type", sheet: TAB.DATA, column: COLUMN.DATA.TRANSACTION_TYPE },
+        landlord:         { selector: "datalist#landlord", sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
+        contractStatus:   { selector: "datalist#contract-status", sheet: TAB.DATA, column: COLUMN.DATA.CONTRACT_STATUS },
+        property:         { selector: "datalist#property", sheet: TAB.PROPERTIES, column: COLUMN.PROPERTIES.NAME_AUTOFILL },
+        client:           { selector: "datalist#client", sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
+        propertyContact:  { selector: "datalist#property-contact", sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
       };
       selector = {
-        kam:                "select[name=kam]",
-        transactionType:    "select[name=transaction-type]",
+        kam:                "input[name=kam]",
+        transactionType:    "input[name=transaction-type]",
         contractStartDate:  "input[name=contract-start-date]",
         contractEndDate:    "input[name=contract-end-date]",
         contractDuration:   "input[name=contract-duration]",
-        landlord:           "select[name=landlord]",
+        landlord:           "input[name=landlord]",
         grossSalesRate:     "input[name=gross-sales-rate]",
-        contractStatus:     "select[name=contract-status]",
-        property:           "select[name=property]",
-        client:             "select[name=client]",
-        propertyContact:    "select[name=property-contact]",
+        contractStatus:     "input[name=contract-status]",
+        property:           "input[name=property]",
+        client:             "input[name=client]",
+        propertyContact:    "input[name=property-contact]",
         contractUrl:        "input[name=contract-url]",
       };
       break;
     
     case TAB.PAYMENTS:
       ddlFrom = {
-        reference:          { sheet: TAB.CONTRACTS, column: COLUMN.CONTRACTS.REFERENCE },
-        externalAgentName:  { sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
-        internalAgentName:  { sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
-        costType:           { sheet: TAB.DATA, column: COLUMN.DATA.COST_TYPE },
+        reference:          { selector: "datalist#reference", sheet: TAB.CONTRACTS, column: COLUMN.CONTRACTS.REFERENCE },
+        externalAgentName:  { selector: "datalist#external-agent-name", sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
+        internalAgentName:  { selector: "datalist#internal-agent-name", sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
+        costType:           { selector: "datalist#cost-type", sheet: TAB.DATA, column: COLUMN.DATA.COST_TYPE },
       };
       selector = {
-        reference:                "select[name=reference]",
+        reference:                "input[name=reference]",
         dues:                     "input[name=dues]",
         netSalesRate:             "input[name=net-sales-rate]",
         comRate:                  "input[name=com-rate]",
@@ -158,13 +161,13 @@
         netCom:                   "input[name=net-com]",
         externalAgentGciPhp:      "input[name=external-agent-gci-php]",
         externalAgentGciPercent:  "input[name=external-agent-gci-percent]",
-        externalAgentName:        "select[name=external-agent-name]",
+        externalAgentName:        "input[name=external-agent-name]",
         propelGciPercent:         "input[name=propel-gci-percent]",
         propelGciPhp:             "input[name=propel-gci-php]",
         internalAgentPhp:         "input[name=internal-agent-php]",
-        internalAgentName:        "select[name=internal-agent-name]",
+        internalAgentName:        "input[name=internal-agent-name]",
         internalAgentPercent:     "input[name=internal-agent-percent]",
-        costType:                 "select[name=cost-type]",
+        costType:                 "input[name=cost-type]",
         paymentDueDate:           "input[name=payment-due-date]",
         paymentRecord1:           "input[name=payment-record-1]",
       };
@@ -172,24 +175,24 @@
     
     case TAB.PROPERTIES:
       ddlFrom = {
-        type:               { sheet: TAB.DATA, column: COLUMN.DATA.TRANSACTION_TYPE },
-        kam:                { sheet: TAB.DATA, column: COLUMN.DATA.KAM },
-        propertyConnection: { sheet: TAB.DATA, column: COLUMN.DATA.PROPERTY_CONNECTION },
-        buildingVillage:    { sheet: TAB.DATA, column: COLUMN.DATA.BUILDING },
-        furnished:          { sheet: TAB.DATA, column: COLUMN.DATA.FURNISHING },
-        propertyContact:    { sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
-        landlord:           { sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
+        type:               { selector: "datalist#type", sheet: TAB.DATA, column: COLUMN.DATA.TRANSACTION_TYPE },
+        kam:                { selector: "datalist#kam", sheet: TAB.DATA, column: COLUMN.DATA.KAM },
+        propertyConnection: { selector: "datalist#property-connection", sheet: TAB.DATA, column: COLUMN.DATA.PROPERTY_CONNECTION },
+        buildingVillage:    { selector: "datalist#building-village", sheet: TAB.DATA, column: COLUMN.DATA.BUILDING },
+        furnished:          { selector: "datalist#furnished", sheet: TAB.DATA, column: COLUMN.DATA.FURNISHING },
+        propertyContact:    { selector: "datalist#property-contact", sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
+        landlord:           { selector: "datalist#landlord", sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
       };
       selector = {
-        type:               "select[name=type]",
-        kam:                "select[name=kam]",
-        propertyConnection: "select[name=property-connection]",
-        buildingVillage:    "select[name=building-village]",
+        type:               "input[name=type]",
+        kam:                "input[name=kam]",
+        propertyConnection: "input[name=property-connection]",
+        buildingVillage:    "input[name=building-village]",
         towerStreet:        "input[name=tower-street]",
         unit:               "input[name=unit]",
         unitType:           "input[name=unit-type]",
         sqm:                "input[name=sqm]",
-        furnished:          "select[name=furnished]",
+        furnished:          "input[name=furnished]",
         rentMonth:          "input[name=rent-month]",
         salesPrice:         "input[name=sales-price]",
         petfriendly:        "input[name=petfriendly]",
@@ -199,20 +202,20 @@
         facingView:         "input[name=facing-view]",
         comment:            "input[name=comment]",
         urlToPictures:      "input[name=url-to-pictures]",
-        propertyContact:    "select[name=property-contact]",
-        landlord:           "select[name=landlord]",
+        propertyContact:    "input[name=property-contact]",
+        landlord:           "input[name=landlord]",
       };
       break;
 
     case TAB.CONTACTS:
       ddlFrom = {
-        kam:              { sheet: TAB.DATA, column: COLUMN.DATA.KAM},
-        contactType:      { sheet: TAB.DATA, column: COLUMN.DATA.CONTACT_TYPE},
+        kam:              { selector: "datalist#kam", sheet: TAB.DATA, column: COLUMN.DATA.KAM},
+        contactType:      { selector: "datalist#contact-type", sheet: TAB.DATA, column: COLUMN.DATA.CONTACT_TYPE},
       };
       selector = {
         fullName:           "input[name=full-name]",
-        kam:                "select[name=kam]",
-        contactType:        "select[name=contact-type]",
+        kam:                "input[name=kam]",
+        contactType:        "input[name=contact-type]",
         nationality:        "input[name=nationality]",
         employer:           "input[name=employer]",
         address:            "input[name=address]",
@@ -223,16 +226,37 @@
 
   }
 
+  let storeBtn = document.querySelector("#store-cookies");
+  let showBtn = document.querySelector("#show-cookies");
+  let resetBtn = document.querySelector("#reset-cookies");
+  if (storeBtn) storeBtn.addEventListener("click", cookies.store);
+  if (showBtn) showBtn.addEventListener("click", cookies.restore);
+  if (resetBtn) resetBtn.addEventListener("click", cookies.reset);
+
   let el = {};
-  for (let key in selector) {
-    el[key] = document.querySelector(selector[key]);
-    if (selector[key].match(/^select.*$/)) {
-      console.log(`${key} matches regexp!`)
-      google.script.run
-        .withSuccessHandler((r) => fillDDL(el[key], r))
-        .getColumnContent(ddlFrom[key].sheet, ddlFrom[key].column);
-    }
+  for (let key in ddlFrom) {
+    let { selector } = ddlFrom[key];
+    let element = document.querySelector(selector);
+    google.script.run
+      .withSuccessHandler((r) => fillDDL(element, r))
+      .getColumnContent(ddlFrom[key].sheet, ddlFrom[key].column);
   }
+
+  let addSpan = document.querySelectorAll("span.add");
+  for (let span of addSpan) {
+    span.addEventListener("click", handleAddSpan)
+  }
+
+  // let el = {};
+  // for (let key in selector) {
+  //   el[key] = document.querySelector(selector[key]);
+  //   if (selector[key].match(/^(select|datalist).*$/)) {
+  //     console.log(`${key} matches regexp!`)
+  //     google.script.run
+  //       .withSuccessHandler((r) => fillDDL(el[key], r))
+  //       .getColumnContent(ddlFrom[key].sheet, ddlFrom[key].column);
+  //   }
+  // }
 
   function fillDDL(ddl, content) {
     // Insert one empty element
@@ -251,19 +275,46 @@
 
   function handleFormSubmit(e) {
     e.preventDefault();
-    let children = form.children;
+    let titles = document.querySelectorAll("form > h1");
     let obj = {};
-    let i = 0;
-    for (let key in selector) {
-      let index1 = i*2;
-      let index2 = i*2+1;
-      let title = children[index1];
-      let input = children[index2];
+    for (let title of titles) {
+      let input = title.nextElementSibling;
       obj[title.innerHTML] = input.value;
-      i++;
     }
-    console.log(obj);
     google.script.run.addRecord(sheetName, obj);
   }
+
+  function showGoBack() {
+    
+  }
+
+  function handleGoBack() {
+
+  }
+
+  function handleAddSpan(e) {
+    let classList = e.srcElement.classList
+    let add;
+    for (let className of classList) {
+      let res = className.match(/^add-(\w*)$/);
+      if (res) add = res[1];
+    }
+    switch (add) {
+      case "contract":
+        google.script.run.addContract();
+        break;
+      case "payment":
+        google.script.run.addPayment();
+        break;
+      case "property":
+        google.script.run.addProperty();
+        break;
+      case "contact":
+        google.script.run.addContact();
+        break;
+    }
+  }
+
+  
 
 </script>

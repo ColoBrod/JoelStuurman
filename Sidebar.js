@@ -20,7 +20,8 @@ class Sidebar {
   }
 
   generateFormHtml() {
-    let template = HtmlService.createTemplateFromFile(`form-${this.headTitle.toLowerCase()}.html`);
+    let template = HtmlService
+      .createTemplateFromFile(`form-${this.headTitle.toLowerCase()}.html`);
     switch (this.headTitle) {
       case "Contracts":
         Object.assign(template, { 

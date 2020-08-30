@@ -2,9 +2,11 @@
   <h1><?= fullName ?></h1>
   <input type="text" name="full-name">
   <h1><?= kam ?></h1>
-  <select name="kam"></select>
+  <input name="kam" list="kam">
+  <datalist id="kam" ></datalist>
   <h1><?= contactType ?></h1>
-  <select name="contact-type"></select>
+  <input name="contact-type" list="contact-type">
+  <datalist id="contact-type" ></datalist>
   <h1><?= nationality ?></h1>
   <input type="text" name="nationality">
   <h1><?= employer ?></h1>
@@ -18,4 +20,7 @@
   <hr>
   <input type="reset">
   <input type="submit">
+  <button type="button" id="store-cookies">Store</button>
+  <button type="button" id="show-cookies">Restore</button>
+  <button type="button" id="reset-cookies">Reset cookies</button>
 </form>
