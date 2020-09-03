@@ -1,18 +1,17 @@
-class Sidebar {
-  constructor(src, sidebarTitle, headTitle, clearHistory) {
+class Dialog {
+  constructor(src, dialogTitle, headTitle) {
     this.src = src;
     this.headTitle = headTitle;
     let template = HtmlService.createTemplateFromFile(this.src);
     template.headTitle = headTitle;
     template.form = this.generateFormHtml();
-    template.clearHistory = clearHistory;
     this.html = template.evaluate();
-    this.title = sidebarTitle;
+    this.html.setWidth(800).setHeight(400);
+    this.title = dialogTitle;
   }
 
   show() {
-    this.html.setTitle(this.title);
-    ui.showSidebar(this.html);
+    ui.showModalDialog(this.html, this.title);
   }
 
   updateTitle(newTitle) {
@@ -22,7 +21,7 @@ class Sidebar {
 
   generateFormHtml() {
     let template = HtmlService
-      .createTemplateFromFile(`form-${this.headTitle.toLowerCase()}.html`);
+      .createTemplateFromFile(`dialog-${this.headTitle.toLowerCase()}.html`);
     switch (this.headTitle) {
       case "Contracts":
         Object.assign(template, { 
@@ -38,14 +37,6 @@ class Sidebar {
           client:             COLUMN.CONTRACTS.CLIENT,
           propertyContact:    COLUMN.CONTRACTS.PROPERTY_CONTACT,
           contractUrl:        COLUMN.CONTRACTS.CONTRACT_URL,
-          petClause:          COLUMN.CONTRACTS.PET_CLAUSE,
-          inventoryList:      COLUMN.CONTRACTS.INVENTORY_LIST,
-          parkingSlotNo:      COLUMN.CONTRACTS.PARKING_SLOT_NO,
-          advanceApplicableOn:COLUMN.CONTRACTS.ADVANCE_APPLICABLE_ON,
-          deposit:            COLUMN.CONTRACTS.DEPOSIT,
-          remainingPayment:   COLUMN.CONTRACTS.REMAINING_PAYMENT,
-          propertyType:       COLUMN.CONTRACTS.PROPERTY_TYPE,
-
         });
         break;
       case "Payments":
@@ -93,8 +84,6 @@ class Sidebar {
           urlToPictures:      COLUMN.PROPERTIES.URL_TO_PICTURES,
           propertyContact:    COLUMN.PROPERTIES.PROPERTY_CONTACT,
           landlord:           COLUMN.PROPERTIES.LANDLORD,
-          propertyStreet:     COLUMN.PROPERTIES.PROPERTY_STREET,
-          propertyAddress:    COLUMN.PROPERTIES.PROPERTY_ADDRESS,
         });
         break;
       case "Contacts":

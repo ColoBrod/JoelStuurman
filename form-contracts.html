@@ -6,7 +6,7 @@
   <input list="transaction-type" name="transaction-type" required>
   <datalist id="transaction-type"></datalist>
   <h1><?= contractStartDate ?></h1>
-  <input type="date" name="contract-start-date" required > <!---->
+  <input type="date" name="contract-start-date" required >
   <h1><?= contractEndDate ?></h1>
   <input type="date" name="contract-end-date">
   <h1><?= contractDuration ?></h1>
@@ -16,28 +16,41 @@
   <datalist id="landlord"></datalist>
   <span class="add add-contact">[+] Add a new contact</span>
   <h1><?= grossSalesRate ?></h1>
-  <input type="number" name="gross-sales-rate" min="0" required> <!---->
+  <input type="number" name="gross-sales-rate" min="0" required>
   <h1><?= contractStatus ?></h1>
   <input list="contract-status" name="contract-status">
   <datalist id="contract-status"></datalist>
   <h1><?= property ?></h1>
-  <input list="property" name="property" required> <!---->
+  <input list="property" name="property" required>
   <datalist id="property"></datalist>
   <span class="add add-property">[+] Add a new property</span>
   <h1><?= client ?></h1>
-  <input list="client" name="client" required> <!---->
+  <input list="client" name="client" required>
   <datalist id="client"></datalist>
   <span class="add add-contact">[+] Add a new contact</span>
   <h1><?= propertyContact ?></h1>
-  <input list="property-contact" name="property-contact" required> <!---->
+  <input list="property-contact" name="property-contact" required>
   <datalist id="property-contact"></datalist>
   <span class="add add-contact">[+] Add a new contact</span>
   <h1><?= contractUrl ?></h1>
   <input type="text" name="contract-url">
+  <h1><?= petClause ?></h1>
+  <input type="checkbox" value="TRUE" name="pet-clause">
+  <h1><?= inventoryList ?></h1>
+  <input type="checkbox" value="TRUE" name="inventory-list">
+  <h1><?= parkingSlotNo ?></h1>
+  <input type="text" name="parking-slot-no">
+  <h1><?= advanceApplicableOn ?></h1>
+  <input type="text" name="advance-applicable-on">
+  <h1><?= deposit ?></h1>
+  <input type="text" name="deposit">
+  <h1><?= remainingPayment ?></h1>
+  <input list="remaining-payment" name="remaining-payment">
+  <datalist id="remaining-payment"></datalist>
+  <h1><?= propertyType ?></h1>
+  <input list="property-type" name="property-type">
+  <datalist id="property-type"></datalist>
   <hr>
-  <input type="reset">
   <input type="submit">
-  <button type="button" id="store-cookies">Store</button>
-  <button type="button" id="show-cookies">Restore</button>
-  <button type="button" id="reset-cookies">Reset cookies</button>
+  <input type="reset">
 </form>

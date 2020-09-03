@@ -22,7 +22,15 @@ const COLUMN = {
     PROPERTY:             "Property *Properties*",
     CLIENT:               "Client *Contacts*",
     PROPERTY_CONTACT:     "Property contact *Contacts*",
-    CONTACT_URL:          "Contract URL",
+    CONTRACT_URL:         "Contract URL",
+    CREATE_NEW_CONTRACT:  "[+] Create new Contract",
+    PET_CLAUSE:           "Pet Clause",
+    INVENTORY_LIST:       "Inventory List",
+    PARKING_SLOT_NO:      "Parking Slot No",
+    ADVANCE_APPLICABLE_ON:"Advance applicable on",
+    DEPOSIT:              "Deposit",
+    REMAINING_PAYMENT:    "Remaining Payment",
+    PROPERTY_TYPE:        "Property Type",
   },
   PAYMENTS: {
     REFERENCE:            "Reference",
@@ -78,6 +86,8 @@ const COLUMN = {
     URL_TO_PICTURES:      "URL to Pictures",
     PROPERTY_CONTACT:     "Property contact",
     LANDLORD:             "Landlord",
+    PROPERTY_STREET:      "Property Street",
+    PROPERTY_ADDRESS:     "Property Address",
   },
   CONTACTS: {
     FULL_NAME_AUTOFILL:   "FULL NAME (Autofill)",
@@ -89,6 +99,9 @@ const COLUMN = {
     ADDRESS:              "Address",
     MOBILE:               "Mobile (+639xx with predial...)*",
     EMAIL:                "Email",
+    ID_PICTURE:           "ID - picture",
+    ID_LINK:              "ID - link",
+    ID_ADD:               "[+] add ID",
   },
   DATA: {
     KAM:                  "KAM",
@@ -99,6 +112,9 @@ const COLUMN = {
     FURNISHING:           "Furnishing",
     CONTACT_TYPE:         "Contact Type",
     COST_TYPE:            "Cost Type",
+    PAYABLE_ACCOUNT:      "Payable Account",
+    REMAINING_PAYMENT:    "Remaining Payment",
+    PROPERTY_TYPE:        "Property Type",
   },
 };
 
@@ -110,19 +126,7 @@ const link = {
 
   },
   [TAB.PROPERTIES]: {
-    // "Building / Village": [
-    //   { sheet: "Contracts", column: "Property", multiChoice: true },
-    // ],
-    // "Tower / Street": [
-    //   { sheet: "Contracts", column: "Property", multiChoice: true },
-    // ],
-    // "Unit": [
-    //   { sheet: "Contracts", column: "Property", multiChoice: true },
-    // ],
-    
-    // "Name (Autofill)": [
-      // { sheet: "Contracts", column: "Property", multiChoice: true },
-    // ],
+
   },
   [TAB.CONTACTS]: {
     [COLUMN.CONTACTS.FULL_NAME]: [
@@ -163,19 +167,30 @@ const link = {
     [COLUMN.DATA.CONTACT_TYPE]: [
       { sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.CONTACT_TYPE, multiChoice: false },
     ],
+    [COLUMN.DATA.REMAINING_PAYMENT]: [
+      { sheet: TAB.CONTRACTS, column: COLUMN.CONTRACTS.REMAINING_PAYMENT },
+    ],
+    [COLUMN.DATA.PROPERTY_TYPE]: [
+      { sheet: TAB.CONTRACTS, column: COLUMN.CONTRACTS.PROPERTY_TYPE },
+    ],
   },
 };
 
 // Functions, that open sidebar with html-forms
-let addContract = () => 
+const addContract = () => 
   openSidebar("Add a new contract", "Contracts");
-let addPayment = () =>  
+const addPayment = () =>  
   openSidebar("Add a new payment", "Payments");
-let addProperty = () => 
+const addProperty = () => 
   openSidebar("Add a new property", "Properties");
-let addContact = () =>  
+const addContact = () =>  
   openSidebar("Add a new contact", "Contacts");
 
+// Testing dialog
+const testDialog = () => 
+  openDialog("Contacts");
+
+// Creating menu in the navigation bar
 function onOpen(e) {
   createMenu();
 }
@@ -194,8 +209,30 @@ function createMenu() {
     .addToUi();
 }
 
-function openSidebar(sidebarTitle, headTitle) {
-  let sidebar = new Sidebar("Form.html", sidebarTitle, headTitle);
+function openDialog(sheetName, value = "") {
+  let dialogTitle;
+  switch (sheetName) {
+    case TAB.CONTRACTS:
+      dialogTitle = "Edit contract";
+      break;
+    case TAB.PAYMENTS:
+      dialogTitle = "Edit payment";
+      break;
+    case TAB.PROPERTIES:
+      dialogTitle = "Edit property";
+      break;
+    case TAB.CONTACTS:
+      dialogTitle = "Edit contact";
+      break;
+    default: 
+      return;
+  }
+  let dialog = new Dialog("ModalWindow.html", dialogTitle, sheetName);
+  dialog.show();
+}
+
+function openSidebar(sidebarTitle, headTitle, clearHistory = true) {
+  let sidebar = new Sidebar("Form.html", sidebarTitle, headTitle, clearHistory);
   sidebar.show();
 }
 
@@ -217,7 +254,8 @@ function addRecord(sheetName, content) {
   let autoFill;
   switch (sheetName) {
     case "Contracts":
-      autoFill = [COLUMN.CONTRACTS.REFERENCE, COLUMN.CONTRACTS.CONTRACT_DURATION];
+      autoFill = 
+        [COLUMN.CONTRACTS.REFERENCE, COLUMN.CONTRACTS.CONTRACT_DURATION];
       break;
     case "Payments":
       autoFill = [];
@@ -234,7 +272,6 @@ function addRecord(sheetName, content) {
   range.copyFormatToRange(sheet,1,lastColumn,newRow,newRow);
   // Autofill:
   for (let col of autoFill) {
-    // let x = lastRow - 2;
     let colIndex = getColumnIndex(sheetName, col);
     let range = sheet.getRange(2,colIndex,lastRow-1,1);
     let dest = sheet.getRange(2,colIndex,newRow-1,1);
@@ -242,9 +279,7 @@ function addRecord(sheetName, content) {
   }
   // Display a msgbox notifying about successful execution
   let txt = "";
-  for (let key in content) {
-    txt += `${key}: ${content[key]}\\n`;
-  }
+  for (let key in content) txt += `${key}: ${content[key]}\\n`;
   Browser.msgBox(
     `The record was successfully added to the ${sheetName} tab.\\n\\n${txt}`
   );
@@ -276,21 +311,5 @@ function getColumnContent(sheetName, columnName) {
   return arr;
 }
 
-function getTabNames() { return TAB; }
+function getTabNames()    { return TAB; }
 function getColumnNames() { return COLUMN; }
-
-function testFunction() {
-  // let src = ss.getSheets()[0];
-  // let range = src.getRange("A2:N2");
-
-  // // This copies the formatting in B2:D4 in the source sheet to
-  // // D4:F6 in the second sheet
-  // range.copyFormatToRange(src, 1, 14, 246, 246);
-
-  // range = src.getRange("A244:A245");
-  // let destination = src.getRange("A244:A246");
-  // range.autoFill(destination, SpreadsheetApp.AutoFillSeries.DEFAULT_SERIES);
-
-  // // let formula = range.getFormula();
-  // // Browser.msgBox(formula);
-}

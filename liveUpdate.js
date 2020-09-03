@@ -1,4 +1,3 @@
-
 function onEdit(e) {
   let { range, value, oldValue } = e;
   let page = ss.getActiveSheet();
@@ -13,6 +12,21 @@ function onEdit(e) {
   let columnValues = columnRange.getValues();
   let duplNumber = 0;
   
+  // Create new contract
+  if (pageName == TAB.CONTRACTS && colName == COLUMN.CONTRACTS.CREATE_NEW_CONTRACT) {
+    let chbox = page.getRange(rowIndex, colIndex);
+    chbox.setValue("FALSE");
+    let contractUrl = { rowIndex }
+    contractUrl.colIndex = getColumnIndex(pageName, COLUMN.CONTRACTS.CONTRACT_URL)
+    contractUrl.range = page.getRange(contractUrl.rowIndex, contractUrl.colIndex);
+    contractUrl.range.setValue("NEW_CONTRACT_URL...");
+  }
+
+  // Update Contact ID
+  if (pageName == TAB.CONTACTS && colName == COLUMN.CONTACTS.ID_ADD) {
+    contactId().openForm(rowIndex, colIndex);
+  }
+
   // Multiple choice for following columns:
   if (  (
           pageName == TAB.CONTRACTS && 
@@ -94,7 +108,7 @@ function onEdit(e) {
       return;
     }
   }
-  
+
 }
 
 function duplicateFound(cell, newValue, oldValue) {

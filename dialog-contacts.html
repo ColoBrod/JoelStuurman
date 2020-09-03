@@ -1,0 +1,49 @@
+<form>
+  <div class="field-container">
+    <div class="field">
+      <h1><?= fullName ?></h1>
+      <input type="text" name="full-name">
+    </div>
+
+    <div class="field">
+      <h1><?= kam ?></h1>
+      <input name="kam" list="kam">
+      <datalist id="kam" ></datalist>
+    </div>
+
+    <div class="field">
+      <h1><?= contactType ?></h1>
+      <input name="contact-type" list="contact-type">
+      <datalist id="contact-type" ></datalist>
+    </div>
+
+    <div class="field">
+      <h1><?= nationality ?></h1>
+      <input type="text" name="nationality">
+    </div>
+
+    <div class="field">
+      <h1><?= employer ?></h1>
+      <input type="text" name="employer">
+    </div>
+
+    <div class="field">
+      <h1><?= address ?></h1>
+      <input type="text" name="address">
+    </div>
+
+    <div class="field">
+      <h1><?= mobile ?></h1>
+      <input type="tel" name="mobile" pattern="\+[0-9]{5,}">
+    </div>
+      
+    <div class="field">
+      <h1><?= email ?></h1>
+      <input type="email" name="email">
+    </div>
+
+  </div>
+  <hr>
+  <input type="submit">
+  <input type="reset">
+</form>

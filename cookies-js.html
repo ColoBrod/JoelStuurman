@@ -38,7 +38,11 @@
       for (let key in obj) {
         let el = document.querySelector(`input[name=${key}]`);
         el.value = obj[key];
+        let type = el.getAttribute("type");
+        if (type == "checkbox" && obj[key] == "TRUE") 
+          el.setAttribute("checked", "")
       }
+      console.log(obj);
     },
 
     reset: function () {
