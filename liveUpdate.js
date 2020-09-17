@@ -1,4 +1,4 @@
-function onEdit(e) {
+function onEditInstallable(e) {
   let { range, value, oldValue } = e;
   let page = ss.getActiveSheet();
   let pageName = page.getName();
@@ -8,18 +8,188 @@ function onEdit(e) {
   let rowIndex = cell.getRow();
   let colName = page.getRange(1,colIndex).getValue();
   let lastRow = page.getLastRow();
+  let lastColumn = page.getLastColumn();
   let columnRange = page.getRange(`${colLetter}2:${colLetter}${lastRow}`);
   let columnValues = columnRange.getValues();
   let duplNumber = 0;
   
   // Create new contract
-  if (pageName == TAB.CONTRACTS && colName == COLUMN.CONTRACTS.CREATE_NEW_CONTRACT) {
+  if ( pageName == TAB.CONTRACTS 
+    && colName == COLUMN.CONTRACTS.CREATE_NEW_CONTRACT
+  ) {
+    let titles, row, contract = {}; 
+    // Titles of the TAB Contracts
+    titles = page.getRange(1,1,1,lastColumn).getValues()[0];
+    // Current row
+    row = page.getRange(rowIndex,1,1,lastColumn).getValues()[0];
+    // Contract forms from this object:
+    for (let i in titles) {
+      switch (titles[i]) {
+        case COLUMN.CONTRACTS.REFERENCE:
+          contract.fileName = row[i];
+          break;
+        case COLUMN.CONTRACTS.PROPERTY:
+          contract.property = row[i];
+          break;
+        case COLUMN.CONTRACTS.PROPERTY_CONTACT:
+          contract.lessorFullName = row[i];
+          break;
+        case COLUMN.CONTRACTS.CLIENT:
+          contract.lesseeFullName = row[i];
+          break;
+        case COLUMN.CONTRACTS.PROPERTY_TYPE:
+          contract.propertyType = row[i];
+          break;
+        case COLUMN.CONTRACTS.CONTRACT_START_DATE:
+          contract.leaseStart = row[i];
+          break;
+        case COLUMN.CONTRACTS.CONTRACT_END_DATE:
+          contract.leaseEnd = row[i];
+          break;
+        case COLUMN.CONTRACTS.CONTRACT_DURATION:
+          contract.contractDuration = row[i];
+          break;
+        case COLUMN.CONTRACTS.INVENTORY_LIST:
+          contract.inventoryList = row[i];
+          break;
+        case COLUMN.CONTRACTS.PARKINGё_SLOT_NO:
+          contract.parkingSlot = row[i];
+          break;
+        case COLUMN.CONTRACTS.ADVANCE_APPLICABLE_ON:
+          contract.advanceApplicableOn = row[i];
+          break;
+        case COLUMN.CONTRACTS.DEPOSIT:
+          contract.deposit = row[i];
+          break;
+        case COLUMN.CONTRACTS.REMAINING_PAYMENT:
+          contract.remainingPayment = row[i];
+          break;
+        case COLUMN.CONTRACTS.PET_CLAUSE:
+          contract.petClause = row[i];
+          break;
+        case COLUMN.CONTRACTS.ASSOCIATION_DUES:
+          contract.associationDues = row[i];
+          break;
+        case COLUMN.CONTRACTS.GROSS_SALES_RATE:
+          contract.leaseRate = row[i];
+          break;
+      }
+    }
+    let propertyTab = ss.getSheetByName(TAB.PROPERTIES);
+    let propertyLastColumn = propertyTab.getLastColumn();
+    let propertyLastRow = propertyTab.getLastRow();
+    let nameAutoFillIndex = 
+      getColumnIndex(TAB.PROPERTIES, COLUMN.PROPERTIES.NAME_AUTOFILL);
+    let nameAutoFill = propertyTab
+      .getRange(2,nameAutoFillIndex,propertyLastRow-1,1)
+      .getValues();
+    let propertyRowIndex;
+    for (let i in nameAutoFill) {
+      if (nameAutoFill[i][0] == contract.property) {
+        propertyRowIndex = parseInt(i)+2;
+        break;
+      }
+    }
+    let propertyTitles = propertyTab
+      .getRange(1,1,1,propertyLastColumn)
+      .getValues()[0];
+    let propertyRow = propertyTab
+      .getRange(propertyRowIndex, 1, 1, propertyLastColumn)
+      .getValues()[0];
+    for (let i in propertyTitles) {
+      switch (propertyTitles[i]) {
+        case COLUMN.PROPERTIES.BUILDING_VILLAGE:
+          contract.propertyName = propertyRow[i];
+          break;
+        case COLUMN.PROPERTIES.UNIT:
+          contract.propertyNo = propertyRow[i];
+          break;
+        case COLUMN.PROPERTIES.TOWER_STREET:
+          contract.propertySection = propertyRow[i];
+          break;
+        case COLUMN.PROPERTIES.PROPERTY_STREET:
+          contract.propertyStreet = propertyRow[i];
+          break;
+        case COLUMN.PROPERTIES.PROPERTY_ADDRESS:
+          contract.propertyAddress = propertyRow[i];
+          break;
+      }
+    }
+    let contactTab = ss.getSheetByName(TAB.CONTACTS);
+    let contactLastColumn = contactTab.getLastColumn();
+    let contactLastRow = contactTab.getLastRow();
+    let contactFullNameIndex = 
+      getColumnIndex(TAB.CONTACTS, COLUMN.CONTACTS.FULL_NAME);
+    let contactFullName = contactTab
+      .getRange(2,contactFullNameIndex,contactLastRow-1,1)
+      .getValues();
+    let lessorRowIndex;
+    let lesseeRowIndex;
+    for (let i in contactFullName) {
+      if (contactFullName[i][0] == contract.lessorFullName)
+        lessorRowIndex = parseInt(i)+2;
+      else if (contactFullName[i][0] == contract.lesseeFullName)
+        lesseeRowIndex = parseInt(i)+2;
+      if (lessorRowIndex && lesseeRowIndex) break;
+    }
+    let contactTitles = contactTab
+      .getRange(1,1,1,contactLastColumn)
+      .getValues()[0];
+    let lessorRow = contactTab
+      .getRange(lessorRowIndex, 1, 1, contactLastColumn)
+      .getValues()[0];
+    let lesseeRow = contactTab
+      .getRange(lesseeRowIndex, 1, 1, contactLastColumn)
+      .getValues()[0];
+    for (let i in contactTitles) {
+      switch (contactTitles[i]) {
+        case COLUMN.CONTACTS.NATIONALITY:
+          contract.lessorNationality = lessorRow[i];
+          contract.lesseeNationality = lesseeRow[i];
+          break;
+        case COLUMN.CONTACTS.ADDRESS:
+          contract.lessorAddress = lessorRow[i];
+          contract.lesseeAddress = lesseeRow[i];
+          break;
+      }
+    }
+
+    // CREATE FILE AND BUILD NEW CONTRACT:
+    const contractDoc = new ContractDocument(contract.fileName);
+    let url = contractDoc.build(
+      contract.lessorFullName,
+      contract.lessorNationality,
+      contract.lessorAddress,
+      contract.lesseeFullName,
+      contract.lesseeNationality,
+      contract.lesseeAddress,
+      contract.propertyNo,
+      contract.propertySection,
+      contract.propertyStreet,
+      contract.propertyAddress,
+      contract.propertyType,
+      contract.leaseStart,
+      contract.leaseEnd,
+      contract.contractDuration,
+      contract.inventoryList,
+      contract.leaseRate,
+      contract.parkingSlot,
+      contract.advanceApplicableOn,
+      contract.deposit,
+      contract.petClause,
+      contract.associationDues,
+      contract.remainingPayment
+    );
+    // CHECKBOX:
     let chbox = page.getRange(rowIndex, colIndex);
     chbox.setValue("FALSE");
+    // Update contract URL:
     let contractUrl = { rowIndex }
-    contractUrl.colIndex = getColumnIndex(pageName, COLUMN.CONTRACTS.CONTRACT_URL)
-    contractUrl.range = page.getRange(contractUrl.rowIndex, contractUrl.colIndex);
-    contractUrl.range.setValue("NEW_CONTRACT_URL...");
+    contractUrl.colIndex = 
+      getColumnIndex(pageName, COLUMN.CONTRACTS.CONTRACT_URL)
+    contractUrl.range = 
+      page.getRange(contractUrl.rowIndex, contractUrl.colIndex);
+    contractUrl.range.setValue(url);
   }
 
   // Update Contact ID

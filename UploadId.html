@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload ID</title>
+</head>
+<body>
+
+<form>
+  <div>
+    <span id="row-index"><?= rowIndex ?></span>
+    <img src="<?= idUrl ?>" alt="ID image">
+    
+  </div>
+  <hr>
+  <input name="file" type="file"/>
+  <input type="submit" value="Upload File" name="submit"/>
+</form>
+
+<style>
+  form img {
+    max-width: 700px;
+    min-height: 340px;
+  }
+  form span {
+    display: none;
+  }
+</style>
+
+<script>
+
+  const img = document.querySelector("form img");
+  const submitButton = document.querySelector("form input[type=submit]");
+  submitButton.addEventListener("click", handleSubmit);
+  const fileInput = document.querySelector("form input[type=file]");
+  const rowIndex = document.querySelector("form span#row-index").innerHTML;
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    let file = fileInput.files[0];
+    console.log(file)
+    const fr = new FileReader();
+    fr.onload = (e) => {
+      const data = e.target.result.split(",");
+      const obj = {fileName: file.name, mimeType: data[0].match(/:(\w.+);/)[1], data: data[1]};
+      google.script.run
+        .withSuccessHandler(id => updateImg(id))
+        .uploadImgToDrive(obj);
+    }
+    fr.readAsDataURL(file);
+
+  }
+
+  function updateImg(id) {
+    let url = "https://drive.google.com/uc?export=view&id=" + id;
+    img.src = url;
+    google.script.run
+      .updateIdLink(rowIndex, url);
+  }
+
+</script>
+</body>
+</html>

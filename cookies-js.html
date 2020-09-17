@@ -24,7 +24,9 @@
         let res = s.match(/^input\[name=([\w\d-]*)\]$/);
         if (!res) continue;
         let name = res[1];
-        let value = document.querySelector(s).value; 
+        let el = document.querySelector(s);
+        if (!el) continue;
+        let value = el.value; 
         obj[name] = value;
       }
       let json = JSON.stringify(obj);
@@ -37,6 +39,7 @@
       const obj = JSON.parse(json);
       for (let key in obj) {
         let el = document.querySelector(`input[name=${key}]`);
+        if (!el) continue;
         el.value = obj[key];
         let type = el.getAttribute("type");
         if (type == "checkbox" && obj[key] == "TRUE") 
@@ -50,4 +53,18 @@
     },
 
   }
+
+  let formHistory;
+  if (clearHistory) {
+    cookies.delete("History");
+    cookies.set("History", "[]");
+    formHistory = [];
+  }
+  else {
+    formHistory = JSON.parse(cookies.get("History"));
+  }
+
+  console.log("FORM_HISTORY:");
+  console.log(formHistory);
+
 </script>

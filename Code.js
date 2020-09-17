@@ -11,7 +11,7 @@ const COLUMN = {
   CONTRACTS: {
     REFERENCE:            "Reference",
     ID:                   "ID",
-    KAM:                  "KAM *Data*",
+    KAM:                  "KAM",
     TRANSACTION_TYPE:     "Transaction Type *Data*",
     CONTRACT_START_DATE:  "Contract Start Date",
     CONTRACT_END_DATE:    "Contract End Date",
@@ -31,6 +31,7 @@ const COLUMN = {
     DEPOSIT:              "Deposit",
     REMAINING_PAYMENT:    "Remaining Payment",
     PROPERTY_TYPE:        "Property Type",
+    ASSOCIATION_DUES:     "Association Dues",
   },
   PAYMENTS: {
     REFERENCE:            "Reference",
@@ -117,6 +118,84 @@ const COLUMN = {
     PROPERTY_TYPE:        "Property Type",
   },
 };
+const formHeader = {
+  [TAB.CONTRACTS]: { 
+    kam:                COLUMN.CONTRACTS.KAM,
+    transactionType:    COLUMN.CONTRACTS.TRANSACTION_TYPE,
+    contractStartDate:  COLUMN.CONTRACTS.CONTRACT_START_DATE,
+    contractEndDate:    COLUMN.CONTRACTS.CONTRACT_END_DATE,
+    landlord:           COLUMN.CONTRACTS.LANDLORD,
+    grossSalesRate:     COLUMN.CONTRACTS.GROSS_SALES_RATE,
+    contractStatus:     COLUMN.CONTRACTS.CONTRACT_STATUS,
+    property:           COLUMN.CONTRACTS.PROPERTY,
+    client:             COLUMN.CONTRACTS.CLIENT,
+    propertyContact:    COLUMN.CONTRACTS.PROPERTY_CONTACT,
+    contractUrl:        COLUMN.CONTRACTS.CONTRACT_URL,
+    petClause:          COLUMN.CONTRACTS.PET_CLAUSE,
+    inventoryList:      COLUMN.CONTRACTS.INVENTORY_LIST,
+    parkingSlotNo:      COLUMN.CONTRACTS.PARKING_SLOT_NO,
+    advanceApplicableOn: COLUMN.CONTRACTS.ADVANCE_APPLICABLE_ON,
+    deposit:            COLUMN.CONTRACTS.DEPOSIT,
+    remainingPayment:   COLUMN.CONTRACTS.REMAINING_PAYMENT,
+    propertyType:       COLUMN.CONTRACTS.PROPERTY_TYPE,
+  },
+  [TAB.PAYMENTS]: { 
+    reference:          COLUMN.PAYMENTS.REFERENCE,
+    duesPhp:            COLUMN.PAYMENTS.DUES_PHP,
+    netSalesRate:       COLUMN.PAYMENTS.NET_SALES_RATE,
+    comRatePercent:     COLUMN.PAYMENTS.COM_RATE_PERCENT,
+    grossCom:           COLUMN.PAYMENTS.GROSS_COM,
+    discountPercent:    COLUMN.PAYMENTS.DISCOUNT_PERCENT,
+    discountPhp:        COLUMN.PAYMENTS.DISCOUNT_PHP,
+    netCom:             COLUMN.PAYMENTS.NET_COM,
+    externalAgentGciPhp: COLUMN.PAYMENTS.EXTERNAL_AGENT_GCI_PHP,
+    externalAgentGciPercent: COLUMN.PAYMENTS.EXTERNAL_AGENT_GCI_PERCENT,
+    externalAgentName:  COLUMN.PAYMENTS.EXTERNAL_AGENT_NAME,
+    propelGciPercent:   COLUMN.PAYMENTS.PROPEL_GCI_PERCENT,
+    propelGciPhp:       COLUMN.PAYMENTS.PROPEL_GCI_PHP,
+    internalAgentPhp:   COLUMN.PAYMENTS.INTERNAL_AGENT_PHP,
+    internalAgentName:  COLUMN.PAYMENTS.INTERNAL_AGENT_NAME,
+    internalAgentPercent: COLUMN.PAYMENTS.INTERNAL_AGENT_PERCENT,
+    costType:           COLUMN.PAYMENTS.COST_TYPE,
+    paymentDueDate:     COLUMN.PAYMENTS.PAYMENT_DUE_DATE,
+    paymentRecord1Date: COLUMN.PAYMENTS.PAYMENT_RECORD_1_DATE,
+  },
+  [TAB.PROPERTIES]: { 
+    transactionType:    COLUMN.PROPERTIES.TRANSACTION_TYPE,
+    kam:                COLUMN.PROPERTIES.KAM,
+    propertyConnection: COLUMN.PROPERTIES.PROPERTY_CONNECTION,
+    buildingVillage:    COLUMN.PROPERTIES.BUILDING_VILLAGE,
+    towerStreet:        COLUMN.PROPERTIES.TOWER_STREET,
+    unit:               COLUMN.PROPERTIES.UNIT,
+    unitType:           COLUMN.PROPERTIES.UNIT_TYPE,
+    sqm:                COLUMN.PROPERTIES.SQM,
+    furnished:          COLUMN.PROPERTIES.FURNISHED,
+    rentMonth:          COLUMN.PROPERTIES.RENT_MONTH,
+    salesPrice:         COLUMN.PROPERTIES.SALES_PRICE,
+    petfriendly:        COLUMN.PROPERTIES.PETFRIENDLY,
+    balcony:            COLUMN.PROPERTIES.BALCONY,
+    parking:            COLUMN.PROPERTIES.PARKING,
+    maidsroom:          COLUMN.PROPERTIES.MAIDSROOM,
+    facingView:         COLUMN.PROPERTIES.FACING_VIEW,
+    comment:            COLUMN.PROPERTIES.COMMENT,
+    urlToPictures:      COLUMN.PROPERTIES.URL_TO_PICTURES,
+    propertyContact:    COLUMN.PROPERTIES.PROPERTY_CONTACT,
+    landlord:           COLUMN.PROPERTIES.LANDLORD,
+    propertyStreet:     COLUMN.PROPERTIES.PROPERTY_STREET,
+    propertyAddress:    COLUMN.PROPERTIES.PROPERTY_ADDRESS,
+  },
+  [TAB.CONTACTS]: { 
+    fullName:           COLUMN.CONTACTS.FULL_NAME,
+    kam:                COLUMN.CONTACTS.KAM,
+    contactType:        COLUMN.CONTACTS.CONTACT_TYPE,
+    nationality:        COLUMN.CONTACTS.NATIONALITY,
+    employer:           COLUMN.CONTACTS.EMPLOYER,
+    address:            COLUMN.CONTACTS.ADDRESS,
+    mobile:             COLUMN.CONTACTS.MOBILE,
+    email:              COLUMN.CONTACTS.EMAIL,
+    idLink:             COLUMN.CONTACTS.ID_LINK,
+  },
+}
 
 const link = {
   [TAB.CONTRACTS]: {
@@ -177,18 +256,14 @@ const link = {
 };
 
 // Functions, that open sidebar with html-forms
-const addContract = () => 
-  openSidebar("Add a new contract", "Contracts");
-const addPayment = () =>  
-  openSidebar("Add a new payment", "Payments");
-const addProperty = () => 
-  openSidebar("Add a new property", "Properties");
-const addContact = () =>  
-  openSidebar("Add a new contact", "Contacts");
-
-// Testing dialog
-const testDialog = () => 
-  openDialog("Contacts");
+const addContract = (clearHistory = true) => 
+  openSidebar("Add a new contract", "Contracts", clearHistory);
+const addPayment = (clearHistory = true) =>  
+  openSidebar("Add a new payment", "Payments", clearHistory);
+const addProperty = (clearHistory = true) => 
+  openSidebar("Add a new property", "Properties", clearHistory);
+const addContact = (clearHistory = true) =>  
+  openSidebar("Add a new contact", "Contacts", clearHistory);
 
 // Creating menu in the navigation bar
 function onOpen(e) {
@@ -227,7 +302,7 @@ function openDialog(sheetName, value = "") {
     default: 
       return;
   }
-  let dialog = new Dialog("ModalWindow.html", dialogTitle, sheetName);
+  let dialog = new Dialog("ModalWindow.html", dialogTitle, sheetName, value);
   dialog.show();
 }
 
@@ -253,17 +328,17 @@ function addRecord(sheetName, content) {
   // Columns which should be autofilled:
   let autoFill;
   switch (sheetName) {
-    case "Contracts":
+    case TAB.CONTRACTS:
       autoFill = 
         [COLUMN.CONTRACTS.REFERENCE, COLUMN.CONTRACTS.CONTRACT_DURATION];
       break;
-    case "Payments":
+    case TAB.PAYMENTS:
       autoFill = [];
       break;
-    case "Properties":
+    case TAB.PROPERTIES:
       autoFill = [COLUMN.PROPERTIES.NAME_AUTOFILL];
       break;
-    case "Contacts":
+    case TAB.CONTACTS:
       autoFill = [COLUMN.CONTACTS.FULL_NAME_AUTOFILL];
       break;
   }
@@ -309,6 +384,81 @@ function getColumnContent(sheetName, columnName) {
   let arr = [];
   for (let element of value) arr.push(element[0]);
   return arr;
+}
+
+function searchRow(sheetName, value) {
+  if (!value) return null;
+  let sheet = ss.getSheetByName(sheetName);
+  let searchInColumn;
+  switch (sheetName) {
+    case TAB.CONTRACTS:
+      searchInColumn = COLUMN.CONTRACTS.REFERENCE;
+      break;
+    case TAB.PAYMENTS:
+      searchInColumn = COLUMN.PAYMENTS.REFERENCE;
+      break;
+    case TAB.PROPERTIES:
+      searchInColumn = COLUMN.PROPERTIES.NAME_AUTOFILL;
+      break;
+    case TAB.CONTACTS:
+      searchInColumn = COLUMN.CONTACTS.FULL_NAME;
+      break;
+  }
+  // Searching within the column range
+  let colIndex = getColumnIndex(sheetName, searchInColumn);
+  let lastRow = sheet.getLastRow();
+  let range = sheet.getRange(2,colIndex,lastRow-1,1)
+  let colContent = range.getValues();
+  let i;
+  for (i = 0; i < colContent.length; i++)
+    if (colContent[i][0] == value) break;
+  if (i >= colContent.length) return -1;
+  return i;
+}
+
+function getRowObject(sheetName, rowIndex) {
+  let sheet = ss.getSheetByName(sheetName);
+  let lastColumn = sheet.getLastColumn();
+  let titles = sheet.getRange(1,1,1,lastColumn).getValues()[0];
+  let row = sheet.getRange(rowIndex+2,1,1,lastColumn).getValues()[0];
+  let obj = {};
+  for (let k in titles) {
+    let key = titles[k];
+    let value = row[k];
+    obj[key] = value;
+  }
+  return obj;
+}
+
+function updateRowContent(sheetName, rowIndex, content) {
+  let sheet = ss.getSheetByName(sheetName);
+  let lastColumn = sheet.getLastColumn();
+  let titles = sheet.getRange(1,1,1,lastColumn).getValues()[0];
+  let row = sheet.getRange(rowIndex+2,1,1,lastColumn).getValues()[0];
+  let arr = [];
+  for (let k in titles) {
+    let key = titles[k];
+    let value = row[k];
+    if (Object.keys(content).includes(key)) {
+      // Browser.msgBox (`ROW: ${rowIndex+2}, COLUMN: ${k+1}`)
+      let r = sheet.getRange(rowIndex+2,parseInt(k)+1);
+      r.setValue(content[key]);
+    }
+  }
+  return true;
+}
+
+function uploadImgToDrive(obj) {
+  const blob = Utilities.newBlob(
+    Utilities.base64Decode(obj.data), 
+    obj.mimeType, 
+    obj.fileName
+  );
+  let file = DriveApp.createFile(blob);
+  let id = file.getId();
+  let folder = DriveApp.getFolderById("1aamye4GREcKd9MJY6F4as5wjDIausYNp");
+  file.moveTo(folder);
+  return id;
 }
 
 function getTabNames()    { return TAB; }

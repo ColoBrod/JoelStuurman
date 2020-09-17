@@ -1,0 +1,65 @@
+
+=== Contract Template Questions: ===
+
+*) I replaced with a placeholder
+
+  {{ContractDuration}}
+
+*) I'm going to change following text to placeholders:
+
+  ONE HUNDRED FORTY-SIX THOUSAND PESOS (PHP146,000.00)
+   
+   - to {{SomeName}}
+
+  inclusive
+
+    - to {{InventoryList}}
+
+  July 15, 2020 to September 14, 2020.
+
+  - Can I replace it to {{LeaseStart}} to {{LeaseEnd}}
+
+1) PropertyNo - Unit 
+   PropertyName - Building/Village
+   PropertySection - Tower/Street
+   
+   PropertyAddress & PropertyStreet are empty always.
+
+2) A.Condo and B.House I remove anyway and I remove 1 paragraph 
+   based on PropertyType
+
+3) Inclusive - Inventory List (TRUE for Inclusive && FALSE for exclusive)
+
+4) {{LeaseStart}} and {{LeaseEnd}} are formatted like:
+
+    January 20, 2020
+
+5) LeaseRate - Gross sales rate
+
+6) Parking Slot No - Why is it formatted like PHP
+
+7) ADVANCE PAYMENT / SECURITY DEPOSIT. Should I keep both or only one?
+   Autocalculate Deposit*LeaseRate
+
+8) REMAINING RENTAL PAYMENT: 
+   
+   (Option A) && (Option B). Which one should I select. 
+
+   How to calculate value in this table.
+
+
+Building/Village doesn't appear
+TAble 
+Rental period 2 spaces.
+
+Association 
+Seven (7) - put in yellow color
+arrow in forms
+
+Show a popup errror if input data in form is incorrect.
+Remove "Contract URL"
+Insert Association Dues to Contract Sidebar.
+Replace "Property Type" to Properties.
+Unique IDs for properties.
+
+8 AM Thursday.

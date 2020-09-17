@@ -1,14 +1,10 @@
 <script>
   let form = document.querySelector("form");
-  let goBack = document.querySelector("div.go-back");
+  let TAB,COLUMN;
+  let selector, ddlFrom;
   form.addEventListener("submit", handleFormSubmit);
-  goBack.addEventListener("click", handleGoBack);
-  if (formHistory.length > 0) showGoBack();
-
-  let selector, ddlFrom, popup = null;
-  let TAB, COLUMN;
-    
   const sheetName = document.title;
+  console.log("TO_SEARCH:", toSearch);
 
   main();
   async function main() {
@@ -85,12 +81,6 @@
           remainingPayment:   "input[name=remaining-payment]",
           propertyType:       "input[name=property-type]",
         };
-        popup = {
-          landlord:         TAB.CONTACTS,
-          property:         TAB.PROPERTIES,
-          client:           TAB.CONTACTS,
-          propertyContact:  TAB.CONTACTS,
-        };
         break;
       
       case TAB.PAYMENTS:
@@ -121,7 +111,6 @@
           paymentDueDate:           "input[name=payment-due-date]",
           paymentRecord1:           "input[name=payment-record-1]",
         };
-        
         break;
       
       case TAB.PROPERTIES:
@@ -158,10 +147,6 @@
           propertyStreet:     "input[name=property-street]",
           propertyAddress:    "input[name=property-address]",
         };
-        popup = {
-          landlord:         TAB.CONTACTS,
-          propertyContact:  TAB.CONTACTS,
-        };
         break;
 
       case TAB.CONTACTS:
@@ -183,65 +168,50 @@
         break;
 
     }
-
-    // Restoring form content when document opens
-    cookies.restore();
-
-    let el = {}; // <-- Seems to be useless!
     for (let key in ddlFrom) {
+      console.log("Dialog key:", key);
       let { selector } = ddlFrom[key];
       let element = document.querySelector(selector);
       google.script.run
         .withSuccessHandler((r) => fillDDL(element, r))
         .getColumnContent(ddlFrom[key].sheet, ddlFrom[key].column);
     }
-
-    let addSpan = document.querySelectorAll("span.add");
-    for (let span of addSpan) {
-      span.addEventListener("click", handleAddSpan)
-    }
-
-    // Add an event to all "popup"-fields
-    for (let key in popup) {
-      let el = document.querySelector( selector[key] );
-      el.addEventListener("change", handlePopup);
-    }
-
+    let rowIndex = await searchContent();
+    let content = await getContent(rowIndex);
+    fillDialog(content);
   }
 
-  function getConstants() {
-    return ([
-      new Promise((resolve, reject) => {
-        google.script.run
-          .withSuccessHandler((r) => resolve(r))
-          .getTabNames();
-      }),
-      new Promise((resolve, reject) => {
-        google.script.run
-          .withSuccessHandler((r) => resolve(r))
-          .getColumnNames();
-      })
-    ])
-  }
-
-  function getTabNames() {
-    return new Promise((resolve, reject) => {
+  function searchContent() {
+    return new Promise ((resolve, reject) => {
       google.script.run
-        .withSuccessHandler((r) => resolve(r))
-        .getTabNames();
+        .withSuccessHandler((rowIndex) => resolve(rowIndex))
+        .searchRow(sheetName, toSearch);
     })
   }
 
-  function getColumnNames() {
-    return new Promise((resolve, reject) => {
+  function getContent(index) {
+    return new Promise ((resolve, reject) => {
       google.script.run
-        .withSuccessHandler((r) => resolve(r))
-        .getColumnNames();
+        .withSuccessHandler((rowObject) => resolve(rowObject))
+        .getRowObject(sheetName, index);
     })
   }
 
-  function closeSidebar() {
-    google.script.host.close();
+  function updateRowContent(index, content) {
+    return new Promise((resolve, reject) => {
+      google.script.run
+        .withSuccessHandler((r) => resolve(r))
+        .updateRowContent(sheetName, index, content);
+    })
+  }
+
+  function fillDialog(content) {
+    let headers = document.querySelectorAll("h1");
+    for (let i = 0; i < headers.length; i++) {
+      let h1 = headers[i];
+      let input = h1.nextElementSibling;
+      input.value = content[h1.innerHTML];
+    }
   }
 
   function fillDDL(ddl, content) {
@@ -259,107 +229,35 @@
     }
   }
 
-  function handleFormSubmit(e) {
+  function getConstants() {
+    return ([
+      new Promise((resolve, reject) => {
+        google.script.run
+          .withSuccessHandler((r) => resolve(r))
+          .getTabNames();
+      }),
+      new Promise((resolve, reject) => {
+        google.script.run
+          .withSuccessHandler((r) => resolve(r))
+          .getColumnNames();
+      })
+    ])
+  }
+
+  async function handleFormSubmit(e) {
     e.preventDefault();
-    let titles = document.querySelectorAll("form > h1");
-    let obj = {};
-    for (let title of titles) {
-      let input = title.nextElementSibling;
-      obj[title.innerHTML] = input.value;
+    let rowIndex = await searchContent();
+    let content = {};
+    let headers = document.querySelectorAll("h1");
+    for (let i = 0; i < headers.length; i++) {
+      let h1 = headers[i];
+      let input = h1.nextElementSibling;
+      let key = h1.innerHTML;
+      let value = input.value;
+      content[key] = value;
     }
-    // Reseting cookies related to this page. This doesn't affect History or
-    // or cookies related to another pages.
-    cookies.reset();
-    if (formHistory.length == 0) {
-      google.script.run
-        .withSuccessHandler(closeSidebar)
-        .addRecord(sheetName, obj);
-    }
-    else {
-      google.script.run
-        .withSuccessHandler(handleGoBack)
-        .addRecord(sheetName, obj);
-    }
-  }
-
-  function handlePopup(e) {
-    const el = e.srcElement;
-    const name = el.getAttribute("name");
-    const value = el.value;
-    if (!value) return;
-    const datalistId = el.getAttribute("list");
-    const datalist = document.querySelector(`datalist#${datalistId}`);
-    const options = datalist.childNodes;
-    let isFromList = false;
-    for (let option of options) {
-      if (option.innerHTML == value) {
-        isFromList = true;
-        break;
-      } 
-    }
-    if (!isFromList) {
-      alert("Contact not found!");
-      el.value = "";
-      return;
-    }
-    google.script.run.openDialog(popup[name], el.value);
-  }
-
-  function showGoBack() {
-    goBack.style.display = "block";
-  }
-
-  function handleGoBack() {
-    let historyLast = historyRemoveLast();
-    switch (historyLast) {
-      case TAB.CONTRACTS:
-        google.script.run.addContract(false);
-        break;
-      case TAB.PAYMENTS:
-        google.script.run.addPayment(false);
-        break;
-      case TAB.PROPERTIES:
-        google.script.run.addProperty(false);
-        break;
-      case TAB.CONTACTS:
-        google.script.run.addContact(false);
-        break;
-    }
-  }
-
-  function handleAddSpan(e) {
-    // Save cookies:
-    cookies.store();
-    formHistory.push(sheetName);
-    let json = JSON.stringify(formHistory);
-    cookies.set("History", json);
-    let classList = e.srcElement.classList
-    let add;
-    for (let className of classList) {
-      let res = className.match(/^add-(\w*)$/);
-      if (res) add = res[1];
-    }
-    switch (add) {
-      case "contract":
-        google.script.run.addContract(false);
-        break;
-      case "payment":
-        google.script.run.addPayment(false);
-        break;
-      case "property":
-        google.script.run.addProperty(false);
-        break;
-      case "contact":
-        google.script.run.addContact(false);
-        break;
-    }
-  }
-
-  function historyRemoveLast() {
-    let lastElement = formHistory.pop();
-    let json = JSON.stringify(formHistory);
-    cookies.set("History", json);
-    return lastElement;
+    await updateRowContent(rowIndex, content);
+    google.script.host.close();
   }
 
 </script>
