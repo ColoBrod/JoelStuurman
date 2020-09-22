@@ -52,7 +52,7 @@ function onEditInstallable(e) {
         case COLUMN.CONTRACTS.INVENTORY_LIST:
           contract.inventoryList = row[i];
           break;
-        case COLUMN.CONTRACTS.PARKINGё_SLOT_NO:
+        case COLUMN.CONTRACTS.PARKING_SLOT_NO:
           contract.parkingSlot = row[i];
           break;
         case COLUMN.CONTRACTS.ADVANCE_APPLICABLE_ON:
@@ -151,6 +151,10 @@ function onEditInstallable(e) {
           contract.lessorAddress = lessorRow[i];
           contract.lesseeAddress = lesseeRow[i];
           break;
+        case COLUMN.CONTACTS.ID_LINK:
+          contract.lessorIdLink = lessorRow[i];
+          contract.lesseeIdLink = lesseeRow[i];
+          break;
       }
     }
 
@@ -160,11 +164,14 @@ function onEditInstallable(e) {
       contract.lessorFullName,
       contract.lessorNationality,
       contract.lessorAddress,
+      contract.lessorIdLink,
       contract.lesseeFullName,
       contract.lesseeNationality,
       contract.lesseeAddress,
+      contract.lesseeIdLink,
       contract.propertyNo,
       contract.propertySection,
+      contract.propertyName,
       contract.propertyStreet,
       contract.propertyAddress,
       contract.propertyType,

@@ -30,7 +30,6 @@ const COLUMN = {
     ADVANCE_APPLICABLE_ON:"Advance applicable on",
     DEPOSIT:              "Deposit",
     REMAINING_PAYMENT:    "Remaining Payment",
-    PROPERTY_TYPE:        "Property Type",
     ASSOCIATION_DUES:     "Association Dues",
   },
   PAYMENTS: {
@@ -67,6 +66,7 @@ const COLUMN = {
   },
   PROPERTIES: {
     NAME_AUTOFILL:        "Name (Autofill)",
+    ID:                   "ID",
     TRANSACTION_TYPE:     "Transaction Type *Data*",
     KAM:                  "KAM *Data*",
     PROPERTY_CONNECTION:  "Property Connection *Data*",
@@ -87,6 +87,7 @@ const COLUMN = {
     URL_TO_PICTURES:      "URL to Pictures",
     PROPERTY_CONTACT:     "Property contact",
     LANDLORD:             "Landlord",
+    PROPERTY_TYPE:        "Property Type",
     PROPERTY_STREET:      "Property Street",
     PROPERTY_ADDRESS:     "Property Address",
   },
@@ -116,6 +117,7 @@ const COLUMN = {
     PAYABLE_ACCOUNT:      "Payable Account",
     REMAINING_PAYMENT:    "Remaining Payment",
     PROPERTY_TYPE:        "Property Type",
+    ASSOCIATION_DUES:     "Association Dues",
   },
 };
 const formHeader = {
@@ -137,7 +139,7 @@ const formHeader = {
     advanceApplicableOn: COLUMN.CONTRACTS.ADVANCE_APPLICABLE_ON,
     deposit:            COLUMN.CONTRACTS.DEPOSIT,
     remainingPayment:   COLUMN.CONTRACTS.REMAINING_PAYMENT,
-    propertyType:       COLUMN.CONTRACTS.PROPERTY_TYPE,
+    associationDues:    COLUMN.CONTRACTS.ASSOCIATION_DUES,
   },
   [TAB.PAYMENTS]: { 
     reference:          COLUMN.PAYMENTS.REFERENCE,
@@ -181,6 +183,7 @@ const formHeader = {
     urlToPictures:      COLUMN.PROPERTIES.URL_TO_PICTURES,
     propertyContact:    COLUMN.PROPERTIES.PROPERTY_CONTACT,
     landlord:           COLUMN.PROPERTIES.LANDLORD,
+    propertyType:       COLUMN.PROPERTIES.PROPERTY_TYPE,
     propertyStreet:     COLUMN.PROPERTIES.PROPERTY_STREET,
     propertyAddress:    COLUMN.PROPERTIES.PROPERTY_ADDRESS,
   },
@@ -250,7 +253,7 @@ const link = {
       { sheet: TAB.CONTRACTS, column: COLUMN.CONTRACTS.REMAINING_PAYMENT },
     ],
     [COLUMN.DATA.PROPERTY_TYPE]: [
-      { sheet: TAB.CONTRACTS, column: COLUMN.CONTRACTS.PROPERTY_TYPE },
+      { sheet: TAB.PROPERTIES, column: COLUMN.PROPERTIES.PROPERTY_TYPE },
     ],
   },
 };
@@ -318,7 +321,7 @@ function addRecord(sheetName, content) {
   let newRow = lastRow+1;
   let titles = sheet.getRange(1, 1, 1, lastColumn).getValues()[0];
   let arr = [];
-  if (sheetName == TAB.CONTRACTS) content.ID = generateUniqueId();
+  if (sheetName == TAB.CONTRACTS || sheetName == TAB.PROPERTIES) content.ID = generateUniqueId();
   for (let i in titles) {
     let title = titles[i];
     let value = content[title] ? content[title] : "";
@@ -374,6 +377,7 @@ function generateUniqueId() {
 }
 
 function getColumnContent(sheetName, columnName) {
+  console.log(`sheetName: ${sheetName}, columnName: ${columnName}`);
   let sheet = ss.getSheetByName(sheetName);
   let lastColumn = sheet.getLastColumn();
   let lastRow = sheet.getLastRow();
@@ -463,3 +467,4 @@ function uploadImgToDrive(obj) {
 
 function getTabNames()    { return TAB; }
 function getColumnNames() { return COLUMN; }
+function msgBox(txt)      { Browser.msgBox(txt); }

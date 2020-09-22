@@ -53,15 +53,15 @@
             sheet: TAB.CONTACTS, 
             column: COLUMN.CONTACTS.FULL_NAME 
           },
-          remainingPayment:  { 
+          remainingPayment: { 
             selector: "datalist#remaining-payment", 
             sheet: TAB.DATA, 
             column: COLUMN.DATA.REMAINING_PAYMENT 
           },
-          propertyType:  { 
-            selector: "datalist#property-type", 
+          associationDues:  { 
+            selector: "datalist#association-dues", 
             sheet: TAB.DATA, 
-            column: COLUMN.DATA.PROPERTY_TYPE 
+            column: COLUMN.DATA.ASSOCIATION_DUES 
           },
         };
         selector = {
@@ -83,7 +83,7 @@
           advanceApplicableOn:"input[name=advance-applicable-on]",
           deposit:            "input[name=deposit]",
           remainingPayment:   "input[name=remaining-payment]",
-          propertyType:       "input[name=property-type]",
+          associationDues:    "input[name=association-dues]",
         };
         popup = {
           landlord:         TAB.CONTACTS,
@@ -133,6 +133,7 @@
           furnished:          { selector: "datalist#furnished", sheet: TAB.DATA, column: COLUMN.DATA.FURNISHING },
           propertyContact:    { selector: "datalist#property-contact", sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
           landlord:           { selector: "datalist#landlord", sheet: TAB.CONTACTS, column: COLUMN.CONTACTS.FULL_NAME },
+          propertyType:       { selector: "datalist#property-type", sheet: TAB.DATA, column: COLUMN.DATA.PROPERTY_TYPE },
         };
         selector = {
           type:               "input[name=type]",
@@ -155,6 +156,7 @@
           urlToPictures:      "input[name=url-to-pictures]",
           propertyContact:    "input[name=property-contact]",
           landlord:           "input[name=landlord]",
+          propertyType:       "input[name=property-type]",
           propertyStreet:     "input[name=property-street]",
           propertyAddress:    "input[name=property-address]",
         };
@@ -191,6 +193,7 @@
     for (let key in ddlFrom) {
       let { selector } = ddlFrom[key];
       let element = document.querySelector(selector);
+      console.log(`sheetName: ${ddlFrom[key].sheet}, columnName: ${ddlFrom[key].column}`);
       google.script.run
         .withSuccessHandler((r) => fillDDL(element, r))
         .getColumnContent(ddlFrom[key].sheet, ddlFrom[key].column);
@@ -198,7 +201,7 @@
 
     let addSpan = document.querySelectorAll("span.add");
     for (let span of addSpan) {
-      span.addEventListener("click", handleAddSpan)
+      span.addEventListener("click", handleAddSpan);
     }
 
     // Add an event to all "popup"-fields
@@ -298,7 +301,9 @@
       } 
     }
     if (!isFromList) {
-      alert("Contact not found!");
+      let txt = datalistId;
+      txt = txt.charAt(0).toUpperCase() + txt.slice(1);
+      google.script.run.msgBox(`${txt} is not found!`);
       el.value = "";
       return;
     }

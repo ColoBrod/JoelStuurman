@@ -48,18 +48,29 @@
    How to calculate value in this table.
 
 
-Building/Village doesn't appear
-TAble 
-Rental period 2 spaces.
+- Building/Village doesn't appear
+- TAble 
+- Rental period 2 spaces.
 
 Association 
-Seven (7) - put in yellow color
+- Seven (7) - put in yellow color
+
 arrow in forms
 
-Show a popup errror if input data in form is incorrect.
-Remove "Contract URL"
-Insert Association Dues to Contract Sidebar.
-Replace "Property Type" to Properties.
-Unique IDs for properties.
+- Show a popup errror if input data in form is incorrect.
+- Remove "Contract URL"
+- Insert Association Dues to Contract Sidebar.
+- Replace "Property Type" to Properties.
+- Unique IDs for properties.
 
 8 AM Thursday.
+
+=================
+
+- Remove {{PropertyStreet}}
+- Isert an image of ID to (ID of parties).
+
+
+== Just memorizing contacts: ==
+Raissa Mikaela Aguirre Velasquez 
+Alice 

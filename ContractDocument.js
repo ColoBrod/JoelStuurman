@@ -31,6 +31,7 @@ class ContractDocument {
       else if (txt.match(/^ASSOCIATION DUES: /)) this.p.associationDues = p;
       else if (txt.match(/^POLICY ON PETS: /)) this.p.policyOnPets = p;
       else if (txt.match(/^ANNEX A: Furnishings/)) this.p.inventoryList = p;
+      else if (txt.match(/^ID of Parties/)) this.p.idOfParties = p;
     }
     this.p.condoP = this.p.condo.getNextSibling();
     this.p.houseP = this.p.house.getNextSibling();
@@ -49,11 +50,14 @@ class ContractDocument {
     lessorFullName,
     lessorNationality,
     lessorAddress,
+    lessorIdLink,
     lesseeFullName,
     lesseeNationality,
     lesseeAddress,
+    lesseeIdLink,
     propertyNo,
     propertySection,
+    propertyName,
     propertyStreet,
     propertyAddress,
     propertyType,
@@ -88,6 +92,8 @@ class ContractDocument {
       this.body.replaceText("{{PropertyNo}}", propertyNo);
     if (propertySection)
       this.body.replaceText("{{PropertySection}}", propertySection);
+    if (propertyName)
+      this.body.replaceText("{{PropertyName}}", propertyName);
     if (propertyStreet)
       this.body.replaceText("{{PropertyStreet}}", propertyStreet);
     if (propertyAddress)
@@ -108,29 +114,41 @@ class ContractDocument {
       // this.removePages(1);
     }
     
-    let advanceArr = advanceApplicableOn.trim().split(/\s*,\s*/);
-    for (let i in advanceArr) advanceArr[i] = parseInt(advanceArr[i]);
-    let notPaid = [];
-    for (let i = 1; i <= contractDuration; i++)
-      if (advanceArr.indexOf(i) === -1) notPaid.push(i);
-    let advancePeriod = "";
-    for (let i = 0; i < advanceArr.length; i++) {
-      let x = advanceArr[i];
-      let delta = x-1;
-      let startDate = new Date(leaseStart);
-      if (delta != 0)
-        startDate.setMonth(startDate.getMonth() + delta);
-      let nextMonth = new Date(startDate);
-      nextMonth.setMonth(nextMonth.getMonth() + 1);
-      let endDate = new Date(nextMonth);
-      endDate.setDate(endDate.getDate() - 1);
-      let startDateFormatted = formatDate(startDate, false);
-      let endDateFormatted = formatDate(endDate, false);
-      let rentalPeriod = `${startDateFormatted} to ${endDateFormatted}`;
-      if (i != 0) advancePeriod += " and ";
-      advancePeriod += rentalPeriod;
+    let advanceArr, notPaid, advancePeriod;
+    if (advanceApplicableOn && leaseStart) {
+      advanceArr = advanceApplicableOn.trim().split(/\s*,\s*/);
+      for (let i in advanceArr) advanceArr[i] = parseInt(advanceArr[i]);
+      notPaid = [];
+      for (let i = 1; i <= contractDuration; i++)
+        if (advanceArr.indexOf(i) === -1) notPaid.push(i);
+      let arr = [];
+      for (let i = 0; i < advanceArr.length; i++) {
+        let x = advanceArr[i];
+        let delta = x-1;
+        let startDate = new Date(leaseStart);
+        if (delta != 0)
+          startDate.setMonth(startDate.getMonth() + delta);
+        let nextMonth = new Date(startDate);
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        let endDate = new Date(nextMonth);
+        endDate.setDate(endDate.getDate() - 1);
+        let period = { start: startDate, end: endDate };
+        if (arr.length == 0) arr.push([period]);
+        else {
+          let y = advanceArr[i-1];
+          if (x == y+1) arr[arr.length-1].push(period);
+          else arr.push([period])
+        }
+      }
+      for (let i = 0; i < arr.length; i++) {
+        let inner = arr[i];
+        let start = inner[0].start;
+        let end = inner.slice(-1)[0].end;
+        let period = `${formatDate(start)} to ${formatDate(end)}`;
+        arr[i] = period;
+      }
+      advancePeriod = arr.join(" and ");
     }
-
     let fillPaymentTable = () => {
       for (let i = 0; i < notPaid.length; i++) {
         let row = this.paymentTable.appendTableRow();
@@ -159,15 +177,14 @@ class ContractDocument {
     switch (remainingPayment) {
       case "by deposit":
         this.p.optionAP.removeFromParent();
-        fillPaymentTable();
+        if (notPaid) fillPaymentTable();
         break;
       case "by check":
         this.p.optionBP.removeFromParent();
-        this.paymentTable.removeFromParent();
-        this.p.underTable.removeFromParent();
+        if (notPaid) fillPaymentTable();
         break;
       default:
-        this.p.optionB.removeFromParent();
+        this.p.optionAP.removeFromParent();
         this.p.optionBP.removeFromParent();
         this.paymentTable.removeFromParent();
         this.p.underTable.removeFromParent();
@@ -183,11 +200,11 @@ class ContractDocument {
       this.body.replaceText("{{LeaseEnd}}", leaseEnd);
     }
     if (contractDuration) {
-      contractDuration = `${humanize(contractDuration)} (${contractDuration})`;
+      contractDuration = `${humanize(contractDuration)}(${contractDuration})`;
       this.body.replaceText("{{ContractDuration}}", contractDuration);
     }
-    if (leaseRate) {
-      let txt = numberWithCommas(leaseRate);
+    if (leaseRate && advanceArr) {
+      let txt = `${humanize(leaseRate).toUpperCase()} (PHP${numberWithCommas(leaseRate)})`;
       this.body.replaceText("{{LeaseRate}}", txt);
       let advance = advanceArr.length
       if (advance) {
@@ -204,8 +221,6 @@ class ContractDocument {
       if (associationDues === "Exclusive")
         this.p.associationDues.replaceText("LESSOR", "LESSEE");
     }
-    console.log("Parking:");
-    console.log(parkingSlot);
     if (parkingSlot) {
       this.body.replaceText("{{ParkingSlot}}", parkingSlot);
     } 
@@ -213,11 +228,6 @@ class ContractDocument {
       let regex = ", inclusive rental for the parking slot Number \\{\\{ParkingSlot\\}\\}\\.";
       this.body.replaceText(regex, ".");
     }
-
-    // if (advance) {
-    //   let txt = `${humanize(advance)} (${advance})`;
-    //   this.body.replaceText("{{Advance}}", txt);
-    // }
 
     if (deposit) {
       let txt = `${humanize(deposit)} (${deposit})`
@@ -228,10 +238,30 @@ class ContractDocument {
 
     if (!petClause) this.p.policyOnPets.removeFromParent();
     
-    // Count number of pages in contract
+    if (lessorIdLink || lesseeIdLink) {
+      const arr = [];
+      if (lessorIdLink) arr.push(lessorIdLink);
+      if (lesseeIdLink) arr.push(lesseeIdLink);
+      const regex = /^https:\/\/drive.google.com\/.*id=(.*)$/;
+      for (let i = 0; i < arr.length; i++) {
+        const link = arr[i];
+        const result = link.match(regex);
+        if (!result) continue;
+        const fileId = result[1];
+        const blob = DriveApp.getFileById(fileId).getBlob();
+        // const paragraph = this.p.idOfParties.getNextSibling();
+        const inlineImg = this.p.idOfParties.appendInlineImage(blob);
+        // Adjusting the size of the image:
+        let w = inlineImg.getWidth();
+        let h = inlineImg.getHeight();
+        let ratio = 600 / w;
+        h = Math.round(ratio*h);
+        inlineImg.setWidth(600);
+        inlineImg.setHeight(h);
+      }
+    }
 
     return this.url;
-
   }
 
   removePages(n) {
